@@ -4,7 +4,7 @@ export interface RawEntityData {
   n: string;
 }
 
-export class Entity {
+export abstract class Entity {
 
   id: number;
   ownerId: number;

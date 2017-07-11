@@ -37,7 +37,7 @@ export class Universe {
     return Array.from(this.stars.values());
   }
 
-  getStar(id) : Star{
+  getStar(id: string) : Star{
     const star = this.stars[id];
     if (!star) {
       throw Error(`Could not get star by ID: ${id}`);
@@ -45,14 +45,13 @@ export class Universe {
     return star;
   }
 
-  getStarByName(name) : Star {
+  getStarByName(name: string) : Star {
     const safeName = (name || '').toLowerCase();
     return this.getStars().find(star => star.name.toLowerCase() === safeName);
   }
 
-  getPlayerStars(playerId) : Star[] {
+  getPlayerStars(playerId: number = this.playerId) : Star[] {
     return this.getStars().filter(star => star.ownerId === playerId);
-
   }
 
   getOwnStars() : Star[] {
@@ -63,7 +62,7 @@ export class Universe {
     return Array.from(this.fleets.values());
   }
 
-  getFleetsAtStar(star: Star) : Fleet[] {
+  getFleetsAtStar(star: Star, playerId: number = this.playerId) : Fleet[] {
       return this.getFleets().filter(fleet => fleet.orbitingStarId = star.id);
   }
 }

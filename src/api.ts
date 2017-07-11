@@ -120,6 +120,11 @@ export default class NeptunesPrideApi {
     return this.sendOrder('full_universe_report', true);
   }
 
+  getTotalShips(star: Star, playerId: number = this.universe.playerId) {
+    const starShips = star.ownerId === playerId ? star.ships : 0;
+    return starShips + sum(this.universe.getFleetsAtStar(playerId).map(fleet => fleet.ships));
+  }
+
   buildFleet(star: Star, ships: number = 1) : Promise<Universe> {
     return this.sendOrder(`new_fleet,${star.id},${ships}`);
   }
@@ -142,7 +147,6 @@ export default class NeptunesPrideApi {
     return readFileP(this.universeFilePath)
       .then(data => new Universe(JSON.parse(data)));
   }
-
 
   splitShipsToFleets(star: Star) : Promise<Array<Universe>> {
     const fleets = this.universe.getFleetsAtStar(star);
