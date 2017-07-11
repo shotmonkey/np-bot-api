@@ -1,0 +1,22 @@
+{
+    "name": "np-bot-api",
+    "description": "Hacked together API for doing things with Neptune's Pride",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/shotmonkey/np-bot-api"
+    },
+    "license": "ISC",
+    "version": "0.0.1",
+    "main": "dist/api.js",
+    "scripts": {
+        "build": "tsc",
+        "start": "npm run build && node dist/index.js"
+    },
+    "dependencies": {
+        "isomorphic-fetch": "^2.2.1",
+        "set-cookie-parser": "^2.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^8.0.10"
+    }
+}
