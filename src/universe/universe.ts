@@ -12,23 +12,25 @@ export class Universe {
   rawData: RawUniverseData;
 
   playerId: number;
-  stars: Map<string, Star>;
-  fleets: Map<string, Fleet>;
+  stars: Map<number, Star>;
+  fleets: Map<number, Fleet>;
 
   constructor(data: RawUniverseData) {
     this.rawData = data;
     this.playerId = data.player_uid;
 
-    this.fleets = new Map<string, Fleet>();
+    this.fleets = new Map<number, Fleet>();
     Object.keys(data.fleets)
       .forEach(fid => {
-        this.fleets.set(fid, new Fleet(data.fleets[fid]));
+        const fleet = data.fleets[fid];
+        this.fleets.set(fleet.uid, new Fleet(fleet));
       });
 
-    this.stars = new Map<string, Star>();
+    this.stars = new Map<number, Star>();
     Object.keys(data.stars)
       .forEach(sid => {
-        this.stars.set(sid, new Star(data.stars[sid]));
+        const star = data.stars[sid];
+        this.stars.set(star.uid, new Star(star));
       });
 
   }
@@ -37,12 +39,8 @@ export class Universe {
     return Array.from(this.stars.values());
   }
 
-  getStar(id: string) : Star{
-    const star = this.stars[id];
-    if (!star) {
-      throw Error(`Could not get star by ID: ${id}`);
-    }
-    return star;
+  getStar(id: number) : Star{
+    return this.stars.get(id);
   }
 
   getStarByName(name: string) : Star {
@@ -60,6 +58,10 @@ export class Universe {
 
   getFleets() : Fleet[] {
     return Array.from(this.fleets.values());
+  }
+
+  getFleet(id: number): Fleet {
+    return this.fleets.get(id);
   }
 
   getFleetsAtStar(star: Star, playerId: number = this.playerId) : Fleet[] {

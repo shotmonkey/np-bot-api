@@ -9,23 +9,21 @@ class Universe {
         this.fleets = new Map();
         Object.keys(data.fleets)
             .forEach(fid => {
-            this.fleets.set(fid, new fleet_1.Fleet(data.fleets[fid]));
+            const fleet = data.fleets[fid];
+            this.fleets.set(fleet.uid, new fleet_1.Fleet(fleet));
         });
         this.stars = new Map();
         Object.keys(data.stars)
             .forEach(sid => {
-            this.stars.set(sid, new star_1.Star(data.stars[sid]));
+            const star = data.stars[sid];
+            this.stars.set(star.uid, new star_1.Star(star));
         });
     }
     getStars() {
         return Array.from(this.stars.values());
     }
     getStar(id) {
-        const star = this.stars[id];
-        if (!star) {
-            throw Error(`Could not get star by ID: ${id}`);
-        }
-        return star;
+        return this.stars.get(id);
     }
     getStarByName(name) {
         const safeName = (name || '').toLowerCase();
@@ -39,6 +37,9 @@ class Universe {
     }
     getFleets() {
         return Array.from(this.fleets.values());
+    }
+    getFleet(id) {
+        return this.fleets.get(id);
     }
     getFleetsAtStar(star, playerId = this.playerId) {
         return this.getFleets().filter(fleet => fleet.orbitingStarId = star.id);

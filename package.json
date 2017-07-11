@@ -6,7 +6,7 @@
         "url": "https://github.com/shotmonkey/np-bot-api"
     },
     "license": "ISC",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "main": "./dist/api.js",
     "types": "./dist/api.d.ts",
     "scripts": {

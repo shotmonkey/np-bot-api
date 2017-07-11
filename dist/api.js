@@ -127,7 +127,7 @@ class NeptunesPrideApi {
     }
     splitShipsToFleets(star) {
         const fleets = this.universe.getFleetsAtStar(star);
-        const shipsAtStar = star.ships;
+        const shipsAtStar = this.getTotalShips(star);
         const accurateShipsPerFleet = shipsAtStar / fleets.length;
         const shipsPerFleet = fleets.map(fleet => ({ fleet, shipsToMove: Math.floor(accurateShipsPerFleet) }));
         while (sum(...shipsPerFleet.map(spf => spf.shipsToMove)) < shipsAtStar) {

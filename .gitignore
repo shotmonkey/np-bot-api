@@ -1,3 +1,4 @@
 node_modules/
 /universe.*.json
 /yarn-error.log
+universe.*.json

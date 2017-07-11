@@ -149,13 +149,17 @@ export default class NeptunesPrideApi {
   }
 
   splitShipsToFleets(star: Star) : Promise<Array<Universe>> {
+
     const fleets = this.universe.getFleetsAtStar(star);
-    const shipsAtStar = star.ships;
+    const shipsAtStar = this.getTotalShips(star);
+
     const accurateShipsPerFleet = shipsAtStar / fleets.length;
     const shipsPerFleet = fleets.map(fleet => ({ fleet, shipsToMove: Math.floor(accurateShipsPerFleet) }));
+
     while(sum(...shipsPerFleet.map(spf => spf.shipsToMove)) < shipsAtStar) {
       shipsPerFleet[0].shipsToMove++;
     }
+
     return Promise.all(
         shipsPerFleet
           .filter(spf => spf.shipsToMove)
