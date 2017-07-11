@@ -1,24 +1,40 @@
-import { Star } from './star';
-import { Fleet } from './fleet';
+import { Star, RawStarData } from './star';
+import { Fleet, RawFleetData } from './fleet';
+
+interface RawUniverseData {
+  player_uid: number;
+  stars: { [key:string]:RawStarData };
+  fleets: { [key:string]:RawFleetData };
+}
 
 export class Universe {
 
-  rawData: any;
+  rawData: RawUniverseData;
 
-  player_uid: number;
+  playerId: number;
   stars: Map<string, Star>;
   fleets: Map<string, Fleet>;
 
-  constructor(data) {
+  constructor(data: RawUniverseData) {
     this.rawData = data;
-    this.player_uid = data.player_uid;
-    this.stars = data.stars;
-    this.fleets = data.fleets;
+    this.playerId = data.player_uid;
+
+    this.fleets = new Map<string, Fleet>();
+    Object.keys(data.fleets)
+      .forEach(fid => {
+        this.fleets.set(fid, new Fleet(data.fleets[fid]));
+      });
+
+    this.stars = new Map<string, Star>();
+    Object.keys(data.stars)
+      .forEach(sid => {
+        this.stars.set(sid, new Star(data.stars[sid]));
+      });
+
   }
 
-  starsAsArray() : Star[] {
-    return Object.keys(this.stars)
-      .map(id => this.stars[id]);
+  getStars() : Star[] {
+    return Array.from(this.stars.values());
   }
 
   getStar(id) : Star{
@@ -30,24 +46,24 @@ export class Universe {
   }
 
   getStarByName(name) : Star {
-    const cleanName = (name || '').toLowerCase();
-    return this.starsAsArray().find(star => star.n.toLowerCase() === cleanName);
+    const safeName = (name || '').toLowerCase();
+    return this.getStars().find(star => star.name.toLowerCase() === safeName);
   }
 
   getPlayerStars(playerId) : Star[] {
-    return this.starsAsArray().filter(star => star.puid === playerId);
+    return this.getStars().filter(star => star.ownerId === playerId);
+
   }
 
   getOwnStars() : Star[] {
-    return this.getPlayerStars(this.player_uid);
+    return this.getPlayerStars(this.playerId);
   }
 
-  fleetsAsArray() : Fleet[] {
-    return Object.keys(this.fleets)
-      .map(id => this.fleets[id]);
+  getFleets() : Fleet[] {
+    return Array.from(this.fleets.values());
   }
 
   getFleetsAtStar(star: Star) : Fleet[] {
-      return this.fleetsAsArray().filter(fleet => fleet.ouid === star.uid);
+      return this.getFleets().filter(fleet => fleet.orbitingStarId = star.id);
   }
 }

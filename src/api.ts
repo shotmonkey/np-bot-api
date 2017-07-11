@@ -121,15 +121,15 @@ export default class NeptunesPrideApi {
   }
 
   buildFleet(star: Star, ships: number = 1) : Promise<Universe> {
-    return this.sendOrder(`new_fleet,${star.uid},${ships}`);
+    return this.sendOrder(`new_fleet,${star.id},${ships}`);
   }
 
-  moveShipsToFleet(fleet: Fleet, ships: number) : Promise<Universe> {
-    return this.sendOrder(`ship_transfer,${fleet.uid},${fleet.st + ships}`);
+  moveShipsToFleet(fleet: Fleet, totalShips: number) : Promise<Universe> {
+    return this.sendOrder(`ship_transfer,${fleet.id},${totalShips}`);
   }
 
   moveAllShipsToStar(star: Star) : Promise<Universe> {
-    return this.sendOrder(`gather_all_ships,${star.uid}`);
+    return this.sendOrder(`gather_all_ships,${star.id}`);
   }
 
   saveUniverse() : Promise<any> {
@@ -146,7 +146,7 @@ export default class NeptunesPrideApi {
 
   splitShipsToFleets(star: Star) : Promise<Array<Universe>> {
     const fleets = this.universe.getFleetsAtStar(star);
-    const shipsAtStar = star.st;
+    const shipsAtStar = star.ships;
     const accurateShipsPerFleet = shipsAtStar / fleets.length;
     const shipsPerFleet = fleets.map(fleet => ({ fleet, shipsToMove: Math.floor(accurateShipsPerFleet) }));
     while(sum(...shipsPerFleet.map(spf => spf.shipsToMove)) < shipsAtStar) {
