@@ -122,7 +122,7 @@ export default class NeptunesPrideApi {
 
   getTotalShips(star: Star, playerId: number = this.universe.playerId) {
     const starShips = star.ownerId === playerId ? star.ships : 0;
-    return starShips + sum(this.universe.getFleetsAtStar(playerId).map(fleet => fleet.ships));
+    return starShips + sum(this.universe.getFleetsAtStar(star).map(fleet => fleet.ships));
   }
 
   buildFleet(star: Star, ships: number = 1) : Promise<Universe> {

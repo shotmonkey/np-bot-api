@@ -1,1 +1,1 @@
-{"version":3,"file":"star.js","sourceRoot":"","sources":["../../src/universe/star.ts"],"names":[],"mappings":""}
+{"version":3,"file":"star.js","sourceRoot":"","sources":["../../src/universe/star.ts"],"names":[],"mappings":";;AAAA,qCAAiD;AAMjD,UAAkB,SAAQ,eAAM;IAI9B,YAAY,IAAiB;QAC3B,KAAK,CAAC,IAAI,CAAC,CAAC;QACZ,IAAI,CAAC,KAAK,GAAG,IAAI,CAAC,EAAE,CAAC;IACvB,CAAC;CAEF;AATD,oBASC"}

@@ -1,7 +1,7 @@
 import { Star, RawStarData } from './star';
 import { Fleet, RawFleetData } from './fleet';
 
-interface RawUniverseData {
+export interface RawUniverseData {
   player_uid: number;
   stars: { [key:string]:RawStarData };
   fleets: { [key:string]:RawFleetData };

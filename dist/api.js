@@ -32,7 +32,7 @@ class NeptunesPrideApi {
             body: encodeFormData({
                 type: 'login',
                 alias: username,
-                password,
+                password
             }),
         })
             .then((res) => {
@@ -103,14 +103,18 @@ class NeptunesPrideApi {
         console.log('getUniverse');
         return this.sendOrder('full_universe_report', true);
     }
-    buildFleet(star, ships = 1) {
-        return this.sendOrder(`new_fleet,${star.uid},${ships}`);
+    getTotalShips(star, playerId = this.universe.playerId) {
+        const starShips = star.ownerId === playerId ? star.ships : 0;
+        return starShips + sum(this.universe.getFleetsAtStar(star).map(fleet => fleet.ships));
     }
-    moveShipsToFleet(fleet, ships) {
-        return this.sendOrder(`ship_transfer,${fleet.uid},${fleet.st + ships}`);
+    buildFleet(star, ships = 1) {
+        return this.sendOrder(`new_fleet,${star.id},${ships}`);
+    }
+    moveShipsToFleet(fleet, totalShips) {
+        return this.sendOrder(`ship_transfer,${fleet.id},${totalShips}`);
     }
     moveAllShipsToStar(star) {
-        return this.sendOrder(`gather_all_ships,${star.uid}`);
+        return this.sendOrder(`gather_all_ships,${star.id}`);
     }
     saveUniverse() {
         console.log('saveUniverse', this.universeFilePath);
@@ -123,7 +127,7 @@ class NeptunesPrideApi {
     }
     splitShipsToFleets(star) {
         const fleets = this.universe.getFleetsAtStar(star);
-        const shipsAtStar = star.st;
+        const shipsAtStar = star.ships;
         const accurateShipsPerFleet = shipsAtStar / fleets.length;
         const shipsPerFleet = fleets.map(fleet => ({ fleet, shipsToMove: Math.floor(accurateShipsPerFleet) }));
         while (sum(...shipsPerFleet.map(spf => spf.shipsToMove)) < shipsAtStar) {

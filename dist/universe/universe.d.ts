@@ -1,16 +1,25 @@
-import { Star } from './star';
-import { Fleet } from './fleet';
-export declare class Universe {
-    rawData: any;
+import { Star, RawStarData } from './star';
+import { Fleet, RawFleetData } from './fleet';
+export interface RawUniverseData {
     player_uid: number;
+    stars: {
+        [key: string]: RawStarData;
+    };
+    fleets: {
+        [key: string]: RawFleetData;
+    };
+}
+export declare class Universe {
+    rawData: RawUniverseData;
+    playerId: number;
     stars: Map<string, Star>;
     fleets: Map<string, Fleet>;
-    constructor(data: any);
-    starsAsArray(): Star[];
-    getStar(id: any): Star;
-    getStarByName(name: any): Star;
-    getPlayerStars(playerId: any): Star[];
+    constructor(data: RawUniverseData);
+    getStars(): Star[];
+    getStar(id: string): Star;
+    getStarByName(name: string): Star;
+    getPlayerStars(playerId?: number): Star[];
     getOwnStars(): Star[];
-    fleetsAsArray(): Fleet[];
-    getFleetsAtStar(star: Star): Fleet[];
+    getFleets(): Fleet[];
+    getFleetsAtStar(star: Star, playerId?: number): Fleet[];
 }

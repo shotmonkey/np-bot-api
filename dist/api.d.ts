@@ -9,8 +9,9 @@ export default class NeptunesPrideApi {
     setGameId(gameId: string): void;
     sendOrder(order: any, updateUniverse?: boolean): Promise<Universe>;
     getUniverse(): Promise<Universe>;
+    getTotalShips(star: Star, playerId?: number): any;
     buildFleet(star: Star, ships?: number): Promise<Universe>;
-    moveShipsToFleet(fleet: Fleet, ships: number): Promise<Universe>;
+    moveShipsToFleet(fleet: Fleet, totalShips: number): Promise<Universe>;
     moveAllShipsToStar(star: Star): Promise<Universe>;
     saveUniverse(): Promise<any>;
     getSavedUniverse(): Promise<Universe>;

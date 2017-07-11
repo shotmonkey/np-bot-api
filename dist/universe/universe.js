@@ -1,15 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const star_1 = require("./star");
+const fleet_1 = require("./fleet");
 class Universe {
     constructor(data) {
         this.rawData = data;
-        this.player_uid = data.player_uid;
-        this.stars = data.stars;
-        this.fleets = data.fleets;
+        this.playerId = data.player_uid;
+        this.fleets = new Map();
+        Object.keys(data.fleets)
+            .forEach(fid => {
+            this.fleets.set(fid, new fleet_1.Fleet(data.fleets[fid]));
+        });
+        this.stars = new Map();
+        Object.keys(data.stars)
+            .forEach(sid => {
+            this.stars.set(sid, new star_1.Star(data.stars[sid]));
+        });
     }
-    starsAsArray() {
-        return Object.keys(this.stars)
-            .map(id => this.stars[id]);
+    getStars() {
+        return Array.from(this.stars.values());
     }
     getStar(id) {
         const star = this.stars[id];
@@ -19,21 +28,20 @@ class Universe {
         return star;
     }
     getStarByName(name) {
-        const cleanName = (name || '').toLowerCase();
-        return this.starsAsArray().find(star => star.n.toLowerCase() === cleanName);
+        const safeName = (name || '').toLowerCase();
+        return this.getStars().find(star => star.name.toLowerCase() === safeName);
     }
-    getPlayerStars(playerId) {
-        return this.starsAsArray().filter(star => star.puid === playerId);
+    getPlayerStars(playerId = this.playerId) {
+        return this.getStars().filter(star => star.ownerId === playerId);
     }
     getOwnStars() {
-        return this.getPlayerStars(this.player_uid);
+        return this.getPlayerStars(this.playerId);
     }
-    fleetsAsArray() {
-        return Object.keys(this.fleets)
-            .map(id => this.fleets[id]);
+    getFleets() {
+        return Array.from(this.fleets.values());
     }
-    getFleetsAtStar(star) {
-        return this.fleetsAsArray().filter(fleet => fleet.ouid === star.uid);
+    getFleetsAtStar(star, playerId = this.playerId) {
+        return this.getFleets().filter(fleet => fleet.orbitingStarId = star.id);
     }
 }
 exports.Universe = Universe;
