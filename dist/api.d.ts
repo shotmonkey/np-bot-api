@@ -5,9 +5,12 @@ export default class NeptunesPrideApi {
     universeFilePath: string;
     gameId: string;
     universe: Universe;
+    orderQueue: Promise<Universe>;
     getAuthToken(username: string, password: string): Promise<string>;
     setGameId(gameId: string): void;
-    sendOrder(order: any, updateUniverse?: boolean): Promise<Universe>;
+    handleOrderResponse(res: any): void;
+    queueOrder(orderFunc: () => Promise<Universe>): Promise<Universe>;
+    sendOrder(order: string): Promise<Universe>;
     getUniverse(): Promise<Universe>;
     getTotalShips(star: Star, playerId?: number): any;
     buildFleet(star: Star, ships?: number): Promise<Universe>;

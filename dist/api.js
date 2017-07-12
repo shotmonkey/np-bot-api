@@ -16,8 +16,10 @@ function encodeFormData(data) {
         .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(data[key])}`)
         .join('&');
 }
-function sum(...items) {
-    return items.reduce((sum, item) => sum + item, 0);
+function sum(items) {
+    return items.reduce((sum, item) => {
+        return sum + item;
+    }, 0);
 }
 class NeptunesPrideApi {
     getAuthToken(username, password) {
@@ -55,7 +57,33 @@ class NeptunesPrideApi {
         this.universeFilePath = path.join(__dirname, `universe.${gameId}.json`);
         this.gameId = gameId;
     }
-    sendOrder(order, updateUniverse = false) {
+    handleOrderResponse(res) {
+        if (res.event === 'order:full_universe') {
+            this.universe = new universe_1.Universe(res.report);
+        }
+        else if (res.event !== 'order:ok') {
+            throw Error(`Unexpected order response: ${res.event}, (${JSON.stringify(res)})`);
+        }
+    }
+    queueOrder(orderFunc) {
+        const delayedCallOrderFunc = () => {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    orderFunc().then(resolve);
+                }, 100);
+            });
+        };
+        if (!this.orderQueue) {
+            this.orderQueue = Promise.resolve()
+                .then(delayedCallOrderFunc);
+        }
+        else {
+            this.orderQueue = this.orderQueue
+                .then(delayedCallOrderFunc);
+        }
+        return this.orderQueue;
+    }
+    sendOrder(order) {
         console.log('sendOrder', order);
         const authToken = this.authToken;
         if (!authToken) {
@@ -65,7 +93,7 @@ class NeptunesPrideApi {
         if (!gameId) {
             throw Error('Game ID required, call setGameId first');
         }
-        return fetch(ordersUrl, {
+        const orderFunc = () => fetch(ordersUrl, {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -83,29 +111,24 @@ class NeptunesPrideApi {
             .then(res => {
             return res.json()
                 .then((json) => {
-                if (updateUniverse) {
-                    this.universe = new universe_1.Universe(json.report);
-                }
-                ;
+                this.handleOrderResponse(json);
                 return this.universe;
             })
                 .catch(err => {
                 console.error(err);
-                return res.blob()
-                    .then(blob => {
-                    console.error(blob);
-                    throw Error(err);
-                });
+                throw Error(err);
             });
         });
+        return this.queueOrder(orderFunc);
     }
     getUniverse() {
         console.log('getUniverse');
-        return this.sendOrder('full_universe_report', true);
+        return this.sendOrder('full_universe_report');
     }
     getTotalShips(star, playerId = this.universe.playerId) {
         const starShips = star.ownerId === playerId ? star.ships : 0;
-        return starShips + sum(this.universe.getFleetsAtStar(star).map(fleet => fleet.ships));
+        const fleetShips = sum(this.universe.getFleetsAtStar(star).map(fleet => fleet.ships));
+        return starShips + fleetShips;
     }
     buildFleet(star, ships = 1) {
         return this.sendOrder(`new_fleet,${star.id},${ships}`);
@@ -130,7 +153,7 @@ class NeptunesPrideApi {
         const shipsAtStar = this.getTotalShips(star);
         const accurateShipsPerFleet = shipsAtStar / fleets.length;
         const shipsPerFleet = fleets.map(fleet => ({ fleet, shipsToMove: Math.floor(accurateShipsPerFleet) }));
-        while (sum(...shipsPerFleet.map(spf => spf.shipsToMove)) < shipsAtStar) {
+        while (sum(shipsPerFleet.map(spf => spf.shipsToMove)) < shipsAtStar) {
             shipsPerFleet[0].shipsToMove++;
         }
         return Promise.all(shipsPerFleet

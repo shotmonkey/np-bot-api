@@ -29,7 +29,7 @@ class Universe {
         const safeName = (name || '').toLowerCase();
         return this.getStars().find(star => star.name.toLowerCase() === safeName);
     }
-    getPlayerStars(playerId = this.playerId) {
+    getPlayerStars(playerId) {
         return this.getStars().filter(star => star.ownerId === playerId);
     }
     getOwnStars() {
@@ -41,8 +41,12 @@ class Universe {
     getFleet(id) {
         return this.fleets.get(id);
     }
-    getFleetsAtStar(star, playerId = this.playerId) {
-        return this.getFleets().filter(fleet => fleet.orbitingStarId = star.id);
+    getFleetsAtStar(star, playerId) {
+        const fleets = this.getFleets().filter(fleet => fleet.orbitingStarId === star.id);
+        if (playerId) {
+            return fleets.filter(fleet => fleet.ownerId === playerId);
+        }
+        return fleets;
     }
 }
 exports.Universe = Universe;

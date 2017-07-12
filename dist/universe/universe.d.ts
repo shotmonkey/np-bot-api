@@ -18,7 +18,7 @@ export declare class Universe {
     getStars(): Star[];
     getStar(id: number): Star;
     getStarByName(name: string): Star;
-    getPlayerStars(playerId?: number): Star[];
+    getPlayerStars(playerId: number): Star[];
     getOwnStars(): Star[];
     getFleets(): Fleet[];
     getFleet(id: number): Fleet;
